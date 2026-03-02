@@ -1601,13 +1601,19 @@ document.addEventListener('DOMContentLoaded', () => {
             load();
         }
 
-        speak(text) {
+       speak(text) {
             if (!this.synth || this.englishVoices.length === 0) {
                 console.warn("[TTS] Engine warming up...");
                 return; 
             }
             this.synth.cancel(); 
-            const utterance = new SpeechSynthesisUtterance(text);
+            
+            // --- ここにデブリ除去フィルターを追加 ---
+            // 「~」「～」「...」を空白に置き換えてノイズを消す
+            const cleanText = text.replace(/[~～]/g, '').replace(/\.\.\./g, '').trim();
+
+            // text の代わりに cleanText を音声ユニットに渡す
+            const utterance = new SpeechSynthesisUtterance(cleanText);
             const preferredVoice = this.englishVoices.find(v => v.name.includes('Google US English')) 
                                 || this.englishVoices.find(v => v.name.includes('Samantha'))
                                 || this.englishVoices.find(v => v.name.includes('Zira'))
