@@ -1676,19 +1676,28 @@ to date: 現在まで(のところ)
         }
 
         parseData() {
-            if(!rawData.trim()) { this.masterList = []; return; }
-            const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
-            this.masterList = [];
-            lines.forEach(line => {
-                let sep = -1;
-                if (line.indexOf('\t') !== -1) sep = line.indexOf('\t');
-                else if (line.indexOf(':') !== -1) sep = line.indexOf(':');
-                else if (line.indexOf('：') !== -1) sep = line.indexOf('：');
-                if (sep !== -1) {
-                    this.masterList.push({ w: line.substring(0, sep).trim(), m: line.substring(sep + 1).trim() });
-                }
-            });
+    if(!rawData.trim()) { this.masterList = []; return; }
+    const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
+    this.masterList = [];
+    lines.forEach(line => {
+        let sep = -1;
+        if (line.indexOf('\t') !== -1) sep = line.indexOf('\t');
+        else if (line.indexOf(':') !== -1) sep = line.indexOf(':');
+        else if (line.indexOf('：') !== -1) sep = line.indexOf('：');
+        
+        if (sep !== -1) {
+            let word = line.substring(0, sep).trim();
+            let meaning = line.substring(sep + 1).trim();
+            
+            // --- ここが修正ポイント ---
+            // 「 = 」や「=」以降を削除して、純粋な意味だけを抽出する
+            meaning = meaning.split('=')[0].trim();
+            // --------------------------
+
+            this.masterList.push({ w: word, m: meaning });
         }
+    });
+}
 
         generateRounds() {
             const wordCopy = [...this.masterList]; 
