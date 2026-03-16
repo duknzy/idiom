@@ -1660,28 +1660,33 @@ to date：現在まで｜This victory is definitely his most impressive performa
             this.synth.speak(utterance);
         }
 
-        parseData() {
-    if(!rawData.trim()) { this.masterList = []; return; }
-    // [source...] という行を除外して処理
-    const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
-    this.masterList = [];
-    lines.forEach(line => {
-        // まず「|」で例文を切り分ける
-        const [mainPart, example] = line.split('|').map(s => s.trim());
-        
-        let sep = -1;
-        if (mainPart.indexOf(':') !== -1) sep = mainPart.indexOf(':');
-        else if (mainPart.indexOf('：') !== -1) sep = mainPart.indexOf('：');
-        
-        if (sep !== -1) {
-            this.masterList.push({ 
-                w: mainPart.substring(0, sep).trim(), 
-                m: mainPart.substring(sep + 1).trim(),
-                ex: example || "" // ここで例文を ex に格納する
+                parseData() {
+            if(!rawData.trim()) { this.masterList = []; return; }
+            // [source...] 行を除外し、空行を飛ばす
+            const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
+            this.masterList = [];
+            
+            lines.forEach(line => {
+                // ★修正ポイント：半角「|」と全角「｜」の両方で分割できるように正規表現を使用
+                const parts = line.split(/[|｜]/).map(s => s.trim());
+                const mainPart = parts[0];
+                const example = parts[1] || "";
+                
+                // 熟語と意味を分ける区切り文字（半角「:」または全角「：」）の位置を探す
+                let sep = -1;
+                if (mainPart.indexOf(':') !== -1) sep = mainPart.indexOf(':');
+                else if (mainPart.indexOf('：') !== -1) sep = mainPart.indexOf('：');
+                
+                if (sep !== -1) {
+                    this.masterList.push({ 
+                        w: mainPart.substring(0, sep).trim(), 
+                        m: mainPart.substring(sep + 1).trim(),
+                        ex: example // 例文を格納
+                    });
+                }
             });
         }
-    });
-}
+
 
         generateRounds() {
             const wordCopy = [...this.masterList]; 
