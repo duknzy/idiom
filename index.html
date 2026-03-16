@@ -761,18 +761,15 @@ cure A of B: AのB（病気・悪癖など）を治す | This treatment should c
 
         parseData() {
             if(!rawData.trim()) { this.masterList = []; return; }
-            const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
             this.masterList = [];
             lines.forEach(line => {
-                const [mainPart, example] = line.split('|').map(s => s.trim());
-                let sep = mainPart.indexOf(':') !== -1 ? mainPart.indexOf(':') : mainPart.indexOf('：');
-                
+                let sep = -1;
+                if (line.indexOf('\t') !== -1) sep = line.indexOf('\t');
+                else if (line.indexOf(':') !== -1) sep = line.indexOf(':');
+                else if (line.indexOf('：') !== -1) sep = line.indexOf('：');
                 if (sep !== -1) {
-                    this.masterList.push({ 
-                        w: mainPart.substring(0, sep).trim(), 
-                        m: mainPart.substring(sep + 1).trim(),
-                        ex: example || "" 
-                    });
+                    this.masterList.push({ w: line.substring(0, sep).trim(), m: line.substring(sep + 1).trim() });
                 }
             });
         }
