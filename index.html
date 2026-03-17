@@ -1684,16 +1684,14 @@ to date：現在まで｜This victory is definitely his most impressive performa
             });
         }
 
-    // ★熟語を赤色に強調する究極のエンジン (Ultimate Smart Highlight)
-        // 活用形に対応した強調エンジン
+   // 活用形・分離動詞に対応した究極の強調エンジン
         highlightIdiom(example, idiom) {
             if (!example || !idiom) return example;
             
             // 1. 記号のエスケープ
             let pattern = idiom.replace(/[.*+?^${}[\]\\]/g, '\\$&');
             
-            // 2. 主要な動詞の活用形マッピング
-            // データセットに含まれる主要な動詞を網羅
+            // 2. 主要な動詞の活用形マッピング (Telemetry dataから最適化)
             const verbMap = {
                 'hold': '(hold|held|holding|holds)',
                 'take': '(take|took|taken|taking|takes)',
@@ -1716,7 +1714,6 @@ to date：現在まで｜This victory is definitely his most impressive performa
                 'be': '(be|am|is|are|was|were|been|being)'
             };
 
-            // パターン内の動詞を正規表現グループに置換
             Object.keys(verbMap).forEach(v => {
                 const regex = new RegExp(`\\b${v}\\b`, 'gi');
                 pattern = pattern.replace(regex, verbMap[v]);
@@ -1728,7 +1725,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
             // 4. スラッシュ 「/」 の処理 (on/upon -> (on|upon))
             pattern = pattern.replace(/([^ \(\)\/]+)\/([^ \(\)\/]+)/g, '($1|$2)');
             
-            // 5. 括弧 「( )」 の処理 (オプション化)
+            // 5. 括弧 「( )」 の処理
             pattern = pattern.replace(/\((.*?)\)/g, (match, p1) => {
                 let inner = p1.replace(/[~～]|\.\.\./g, '.*?');
                 return `(${inner})?`;
@@ -1737,11 +1734,12 @@ to date：現在まで｜This victory is definitely his most impressive performa
             // 6. 「~」 や 「...」 をワイルドカード化
             pattern = pattern.replace(/\s*([~～]|\\\.\\\.\\\.)/g, '(.*?)?');
             
-            // 7. スペースの柔軟性
-            pattern = pattern.replace(/\s+/g, '\\s+');
+            // 7. 【重要】分離動詞への対応
+            // 単語間のスペースを、間に1〜2単語（代名詞や名詞）が挟まっても良いように拡張
+            // これで "held me up" や "take it off" をキャッチする
+            pattern = pattern.replace(/\s+/g, '\\s+(?:\\w+\\s+){0,2}');
 
             try {
-                // 文中からパターンに一致する部分を検索して赤文字にする
                 const regex = new RegExp(`(${pattern})`, 'gi');
                 return example.replace(regex, '<span class="text-red-500 not-italic font-bold">$1</span>');
             } catch (e) {
