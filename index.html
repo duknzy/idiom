@@ -2576,7 +2576,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
              }
          }
         
-         startPitStop() {
+        startPitStop() {
              if (!this.dueMistakes || this.dueMistakes.length === 0) return;
              const vocabDue = this.dueMistakes.filter(item => !item.id.toString().startsWith('idiom_'));
              if (!vocabDue || vocabDue.length === 0) return;
@@ -2586,11 +2586,28 @@ to date：現在まで｜This victory is definitely his most impressive performa
              this.questions = vocabDue.map(item => {
                  const word = item.word || item.w;
                  const meaning = item.meaning || item.m;
+
+                 // ★追加：マスターリストからこの熟語の例文を探してくる
+                 const originalData = this.masterList.find(m => m.w === word);
+                 const example = item.ex || (originalData ? originalData.ex : "");
+                 
                  const targetWord = { w: word, m: meaning };
                  
                  const distractors = this.getDistractors(targetWord, false);
                  const options = [targetWord.m, ...distractors].sort(() => Math.random() - 0.5);
-                 return { w: targetWord.w, m: targetWord.m, ex: item.ex || "", qText: targetWord.w, aText: targetWord.m, o: options, docId: item.id, interval: item.interval || 0, repetitions: item.repetitions || 0, easeFactor: item.easeFactor || 2.5 };
+                 
+                 return { 
+                     w: targetWord.w, 
+                     m: targetWord.m, 
+                     ex: example, // ★例文をセット
+                     qText: targetWord.w, 
+                     aText: targetWord.m, 
+                     o: options, 
+                     docId: item.id, 
+                     interval: item.interval || 0, 
+                     repetitions: item.repetitions || 0, 
+                     easeFactor: item.easeFactor || 2.5 
+                 };
              });
              
              this.questions.sort(() => Math.random() - 0.5);
@@ -2887,7 +2904,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
         }
       };
 
-      window.handleSRSUpdate = async (questionObj, isCorrect) => {
+     window.handleSRSUpdate = async (questionObj, isCorrect) => {
         if (!window.currentUser) return;
         
         const mistakesRef = collection(db, "users", window.currentUser.uid, "mistakes");
@@ -2927,9 +2944,11 @@ to date：現在まで｜This victory is definitely his most impressive performa
         nextDate.setDate(now.getDate() + nextInterval);
         const nextReviewSeconds = Math.floor(nextDate.getTime() / 1000);
 
+        // ★例文（ex）を含めてFirestoreに保存
         setDoc(targetRef, { 
             word: questionObj.w, 
             meaning: questionObj.meaning || questionObj.m, 
+            ex: questionObj.ex || "", 
             nextReview: Timestamp.fromDate(nextDate), 
             interval: nextInterval, 
             repetitions: nextRepetitions, 
@@ -2938,7 +2957,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
         }, { merge: true }).catch((e) => console.error("Telemetry Failed:", e));
 
         try {
-            const CACHE_KEY = `srs_data_${window.currentUser.uid}`;
+            const CACHE_KEY = `idioms_srs_data_${window.currentUser.uid}`;
             const rawString = localStorage.getItem(CACHE_KEY);
             let localData = [];
             if (rawString) localData = JSON.parse(rawString);
@@ -2948,6 +2967,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
                 id: safeWordId,
                 word: questionObj.w,
                 meaning: questionObj.meaning || questionObj.m,
+                ex: questionObj.ex || "", // キャッシュにも追加
                 nextReviewSeconds: nextReviewSeconds, 
                 interval: nextInterval,
                 repetitions: nextRepetitions,
@@ -3005,14 +3025,19 @@ to date：現在まで｜This victory is definitely his most impressive performa
           const word = decodeURIComponent(safeWord);
           const meaning = decodeURIComponent(safeMeaning);
 
+          // ★マスターリストからこの熟語の例文を取得する
+          const originalData = window.quiz.masterList.find(m => m.w === word);
+          const example = originalData ? originalData.ex : "";
+
           let currentItem = window.quiz.allMistakes.find(m => m.word === word || m.w === word);
           const isCurrentlyBookmarked = currentItem && currentItem.bookmarked === true;
           const newValue = !isCurrentlyBookmarked;
 
-          if (currentItem) { currentItem.bookmarked = newValue; } 
-          else {
+          if (currentItem) { 
+              currentItem.bookmarked = newValue; 
+          } else {
               window.quiz.allMistakes.push({ 
-                   word: word, meaning: meaning, bookmarked: newValue, 
+                   word: word, meaning: meaning, ex: example, bookmarked: newValue, 
                    interval: 0, repetitions: 0, easeFactor: 2.5,
                    nextReviewSeconds: Date.now() / 1000 
               });
@@ -3031,22 +3056,26 @@ to date：現在まで｜This victory is definitely his most impressive performa
 
           try {
               await setDoc(targetRef, {
-                  word: word, meaning: meaning, bookmarked: newValue,
+                  word: word, meaning: meaning, 
+                  ex: example, // ★例文をFirestoreに保存
+                  bookmarked: newValue,
                   interval: currentItem ? (currentItem.interval || 0) : 0,
                   repetitions: currentItem ? (currentItem.repetitions || 0) : 0,
                   easeFactor: currentItem ? (currentItem.easeFactor || 2.5) : 2.5,
                   nextReview: safeNextReview
               }, { merge: true });
 
-              const CACHE_KEY = `srs_data_${window.currentUser.uid}`;
+              const CACHE_KEY = `idioms_srs_data_${window.currentUser.uid}`;
               const rawString = localStorage.getItem(CACHE_KEY);
               if (rawString) {
                   let localData = JSON.parse(rawString);
                   const index = localData.findIndex(item => item.word === word || item.id === docId);
-                  if (index !== -1) { localData[index].bookmarked = newValue; } 
-                  else {
+                  if (index !== -1) { 
+                      localData[index].bookmarked = newValue; 
+                      localData[index].ex = example; // キャッシュに例文を追加
+                  } else {
                       localData.push({
-                          id: docId, word: word, meaning: meaning, bookmarked: newValue,
+                          id: docId, word: word, meaning: meaning, ex: example, bookmarked: newValue,
                           interval: 0, repetitions: 0, easeFactor: 2.5, nextReviewSeconds: Date.now() / 1000
                       });
                   }
