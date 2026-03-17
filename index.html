@@ -1684,14 +1684,14 @@ to date：現在まで｜This victory is definitely his most impressive performa
             });
         }
 
-   // 活用形・分離動詞に対応した究極の強調エンジン
+   // 活用形・分離動詞に対応した強調エンジン
         highlightIdiom(example, idiom) {
             if (!example || !idiom) return example;
             
             // 1. 記号のエスケープ
             let pattern = idiom.replace(/[.*+?^${}[\]\\]/g, '\\$&');
             
-            // 2. 主要な動詞の活用形マッピング (Telemetry dataから最適化)
+            // 2. 主要な動詞の活用形マッピング
             const verbMap = {
                 'hold': '(hold|held|holding|holds)',
                 'take': '(take|took|taken|taking|takes)',
@@ -1722,7 +1722,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
             // 3. oneselfの全形態に対応
             pattern = pattern.replace(/\boneself\b/gi, '(oneself|myself|yourself|himself|herself|itself|ourselves|themselves)');
             
-            // 4. スラッシュ 「/」 の処理 (on/upon -> (on|upon))
+            // 4. スラッシュ 「/」 の処理
             pattern = pattern.replace(/([^ \(\)\/]+)\/([^ \(\)\/]+)/g, '($1|$2)');
             
             // 5. 括弧 「( )」 の処理
@@ -1734,22 +1734,19 @@ to date：現在まで｜This victory is definitely his most impressive performa
             // 6. 「~」 や 「...」 をワイルドカード化
             pattern = pattern.replace(/\s*([~～]|\\\.\\\.\\\.)/g, '(.*?)?');
             
-            // 7. 【重要】分離動詞への対応
-            // 単語間のスペースを、間に1〜2単語（代名詞や名詞）が挟まっても良いように拡張
-            // これで "held me up" や "take it off" をキャッチする
-            // 7. 【重要】分離動詞への対応
-            // 単語間のスペースを、間に1〜2単語（代名詞や名詞）が挟まっても良いように拡張
+            // 7. 分離動詞への対応（単語間のスペースを拡張）
             pattern = pattern.replace(/\s+/g, '\\s+(?:\\w+\\s+){0,2}');
 
             try {
-                // ★修正：パターンの前後を \\b で囲むことで、単語の一部（Thisのisなど）を無視させる
+                // ★修正の要：\\b で囲み、独立した単語としてマッチさせる
                 const regex = new RegExp(`\\b(${pattern})\\b`, 'gi');
                 return example.replace(regex, '<span class="text-red-500 not-italic font-bold">$1</span>');
             } catch (e) {
                 console.warn("Highlight Engine Error:", e);
                 return example;
             }
-        
+        } // ⬅️ この閉じタグが抜けていたんだ。忘れるな！
+
         generateRounds() {
             const wordCopy = [...this.masterList]; 
             this.vocabRounds = [];
