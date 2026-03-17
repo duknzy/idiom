@@ -469,28 +469,28 @@
                 <div id="progress-fill" class="bg-gradient-to-r from-red-600 to-yellow-500 h-full w-0 transition-all duration-300"></div>
             </div>
             
-            <div id="vocab-interface" class="flex-grow flex flex-col justify-between">
-                <div class="flex-grow flex flex-col items-center justify-center mb-8 relative">
-                    <div class="absolute -top-6 text-gray-500 text-[10px] uppercase tracking-widest" id="question-label">Target</div>
-                    <h2 id="target-word" class="f1-font text-5xl ... cursor-pointer" title="Tap for Hint"></h2>
+           <div id="vocab-interface" class="flex-grow flex flex-col justify-between">
+                <div class="flex flex-col items-start px-2 mb-2">
+                    <div class="text-red-600 text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold mb-1 opacity-80" id="question-label">TARGET COMPONENT</div>
+                    <h2 id="target-word" class="f1-font text-3xl md:text-4xl font-bold text-white border-l-4 border-red-600 pl-4 leading-none tracking-tight"></h2>
+                </div>
 
-                    <div id="example-area" class="mt-4 text-gray-400 italic text-center hidden min-h-[1.5rem]">
-                      <p id="example-text" class="text-lg md:text-xl border-l-2 border-red-600 px-4 bg-white/5 py-2 rounded font-serif"></p>
-                    </div>
+                <div id="example-area" class="flex-grow flex items-center justify-center p-4 md:p-8 bg-white/5 rounded-3xl border border-white/10 my-4 shadow-inner overflow-hidden min-h-[250px]">
+                    <p id="example-text" class="text-3xl md:text-5xl lg:text-7xl text-gray-100 font-serif italic text-center leading-tight tracking-tight drop-shadow-sm"></p>
+                </div>
 
-                    <div class="flex gap-6 mt-6">
-                        <button id="speak-btn" class="text-gray-400 hover:text-cyan-400 transition-colors p-4 rounded-full border border-gray-700 bg-black/40 hover:bg-black/60 active:scale-95 flex items-center justify-center group shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
-                        </button>
-                        
-                        <button id="flag-btn" class="text-gray-400 hover:text-red-500 transition-colors p-4 rounded-full border border-gray-700 bg-black/40 hover:bg-black/60 active:scale-95 flex items-center justify-center group shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>
-                        </button>
-                    </div>
+                <div class="flex justify-center gap-6 mb-6">
+                    <button id="speak-btn" class="text-gray-400 hover:text-cyan-400 transition-all p-4 rounded-full border border-gray-700 bg-black/40 active:scale-90 shadow-lg group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>
+                    </button>
+                    <button id="flag-btn" class="text-gray-400 hover:text-red-500 transition-all p-4 rounded-full border border-gray-700 bg-black/40 active:scale-90 shadow-lg group">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>
+                    </button>
                 </div>
                 
-                <div id="options-container" class="grid grid-cols-2 gap-4 max-w-4xl mx-auto w-full"></div>
-
+                <div id="options-container" class="grid grid-cols-2 gap-4 max-w-4xl mx-auto w-full mb-2"></div>
+            </div>
+            
                 <div id="spelling-interface" class="hidden w-full flex flex-col items-center">
                     <div id="spelling-slots" class="flex flex-wrap gap-2 justify-center mb-8 min-h-[70px] p-4 bg-black/30 rounded-xl border-b-2 border-dashed border-gray-600 w-full transition-all"></div>
                     <div id="spelling-pool" class="flex flex-wrap gap-3 justify-center w-full max-w-4xl"></div>
@@ -2104,75 +2104,51 @@ to date：現在まで｜This victory is definitely his most impressive performa
     return example.replace(regex, '____');
 }
 
-         showVocabQuestion() {
+        showVocabQuestion() {
              const q = this.questions[this.currentIndex];
              document.getElementById('question-number').innerText = `LAP ${this.currentIndex + 1} / ${this.questions.length}`;
              
              const targetDisplay = document.getElementById('target-word');
-
-             if (this.isRadioMode) {
-                 targetDisplay.className = "w-full flex justify-center py-4"; 
-                 targetDisplay.innerHTML = `
-                    <div class="radio-box">
-                        <div class="radio-content">
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="bg-white text-black text-[10px] font-bold px-1.5 rounded-sm">LIVE</span>
-                                <span class="text-gray-400 text-[10px] font-bold uppercase tracking-widest font-mono">TEAM RADIO</span>
-                            </div>
-                            <div class="flex flex-col">
-                                <span class="text-white f1-font text-2xl font-bold italic tracking-wider">GP <span class="text-gray-600 text-sm not-italic mx-1">➜</span> YOU</span>
-                            </div>
-                        </div>
-                        <div class="waveform">
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                            <div class="wave-bar"></div>
-                        </div>
-                    </div>
-                 `;
-                 setTimeout(() => this.speak(q.w), 300);
-             } else {
-                 targetDisplay.innerHTML = "";
-                 targetDisplay.innerText = q.qText;
-                 targetDisplay.className = (this.isReverseMode && q.qText.length > 8) 
-                     ? "f1-font text-4xl font-bold text-white tracking-wide break-words px-2 text-center"
-                     : "f1-font text-6xl font-bold text-white tracking-wide drop-shadow-lg break-words px-2 text-center";
-                 
-                 if (this.isAutoAudio && !this.isReverseMode && !this.isSpellingMode) setTimeout(() => this.speak(q.w), 200);
-             }
-
              const exArea = document.getElementById('example-area');
              const exText = document.getElementById('example-text');
 
-             // ★例文の表示ロジックを「常にフル表示」に固定
-             // ★例文の表示ロジック：最初から表示(remove hidden)し、タップ処理を削除
-             if (q.ex) {
-                 exText.innerText = q.ex; 
-                 exArea.classList.remove('hidden'); // 自動で表示させる
-                 targetDisplay.style.cursor = "default"; // タップ不要なのでカーソルを戻す
-                 targetDisplay.onclick = null; 
+             // 通常の表示設定
+             exArea.className = "flex-grow flex items-center justify-center p-4 md:p-8 bg-white/5 rounded-3xl border border-white/10 my-4 shadow-inner overflow-hidden min-h-[250px]";
+
+             if (this.isRadioMode) {
+                 // Radio Mode時は中央に波形を表示
+                 targetDisplay.innerText = "RECEIVING...";
+                 exText.innerHTML = `
+                    <div class="radio-box border-none bg-transparent shadow-none scale-150">
+                        <div class="waveform"><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div></div>
+                    </div>`;
+                 setTimeout(() => this.speak(q.w), 300);
              } else {
-                 exArea.classList.add('hidden');
-                 targetDisplay.style.cursor = "default";
-                 targetDisplay.onclick = null; 
+                 // 通常モード：ターゲットを左上に、例文を中央に特大表示
+                 targetDisplay.innerText = q.qText;
+                 
+                 if (q.ex) {
+                     exText.innerText = q.ex;
+                     exText.className = "text-3xl md:text-5xl lg:text-7xl text-gray-100 font-serif italic text-center leading-tight tracking-tight drop-shadow-sm";
+                 } else {
+                     exText.innerText = "(No Example Data)";
+                     exText.className = "text-xl text-gray-600 font-mono italic";
+                 }
+                 
+                 // 自動音声（逆モード・スペルモード以外）
+                 if (this.isAutoAudio && !this.isReverseMode && !this.isSpellingMode) setTimeout(() => this.speak(q.w), 200);
              }
 
              this.lapStartTime = Date.now(); 
-
              document.getElementById('progress-fill').style.width = `${(this.currentIndex / this.questions.length) * 100}%`;
              document.getElementById('feedback').innerText = '';
              
-             const speakBtn = document.getElementById('speak-btn');
-             speakBtn.onclick = () => this.speak(q.w);
+             // 各種ボタンのイベントセット
+             document.getElementById('speak-btn').onclick = () => this.speak(q.w);
 
              const flagBtn = document.getElementById('flag-btn');
              if (flagBtn) {
-                 let isFlagged = false;
-                 const currentItem = (this.allMistakes || []).find(m => m.word === q.w || m.w === q.w);
-                 if (currentItem && currentItem.bookmarked) isFlagged = true;
-
+                 let isFlagged = (this.allMistakes || []).some(m => (m.word === q.w || m.w === q.w) && m.bookmarked);
                  const updateFlagUI = () => {
                      if (isFlagged) {
                          flagBtn.classList.add('text-red-500', 'border-red-500', 'bg-red-900/20');
@@ -2183,13 +2159,8 @@ to date：現在まで｜This victory is definitely his most impressive performa
                      }
                  };
                  updateFlagUI(); 
-
                  flagBtn.onclick = () => {
-                     const safeW = encodeURIComponent(q.w);
-                     const safeM = encodeURIComponent(q.m);
-                     if (window.toggleBookmark) {
-                         window.toggleBookmark(safeW, safeM);
-                     }
+                     window.toggleBookmark(encodeURIComponent(q.w), encodeURIComponent(q.m));
                      isFlagged = !isFlagged;
                      updateFlagUI();
                  };
