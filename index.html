@@ -1687,6 +1687,16 @@ to date：現在まで｜This victory is definitely his most impressive performa
             });
         }
 
+        // ★熟語を赤色に強調する機能 (The Red Highlight)
+        highlightIdiom(example, idiom) {
+            if (!example || !idiom) return example;
+            // ～ や ... をワイルドカード(.*)として扱い、正規表現を作成
+            const escapedIdiom = idiom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/[~～]|\.\.\./g, '.*');
+            const regex = new RegExp(`(${escapedIdiom})`, 'gi');
+            // 一致した部分を span で囲って赤色にする
+            return example.replace(regex, '<span class="text-red-500 not-italic font-bold">$1</span>');
+        }
+
 
         generateRounds() {
             const wordCopy = [...this.masterList]; 
@@ -2104,7 +2114,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
     return example.replace(regex, '____');
 }
 
-        showVocabQuestion() {
+       showVocabQuestion() {
              const q = this.questions[this.currentIndex];
              document.getElementById('question-number').innerText = `LAP ${this.currentIndex + 1} / ${this.questions.length}`;
              
@@ -2112,11 +2122,10 @@ to date：現在まで｜This victory is definitely his most impressive performa
              const exArea = document.getElementById('example-area');
              const exText = document.getElementById('example-text');
 
-             // 通常の表示設定
+             // レイアウト設定
              exArea.className = "flex-grow flex items-center justify-center p-4 md:p-8 bg-white/5 rounded-3xl border border-white/10 my-4 shadow-inner overflow-hidden min-h-[250px]";
 
              if (this.isRadioMode) {
-                 // Radio Mode時は中央に波形を表示
                  targetDisplay.innerText = "RECEIVING...";
                  exText.innerHTML = `
                     <div class="radio-box border-none bg-transparent shadow-none scale-150">
@@ -2124,19 +2133,19 @@ to date：現在まで｜This victory is definitely his most impressive performa
                     </div>`;
                  setTimeout(() => this.speak(q.w), 300);
              } else {
-             
+                 // 通常モード：ターゲットを左上に配置
                  targetDisplay.innerText = q.qText;
                  
                  if (q.ex) {
-                     exText.innerText = q.ex;
-                     // ★フォントをf1-fontに統一し、サイズを一段階ダウン (7xl -> 5xl)
+                     // ★ハイライト機能を適用し、innerHTMLで出力
+                     exText.innerHTML = this.highlightIdiom(q.ex, q.w);
+                     // ★サイズを text-5xl に、フォントを f1-font に統一
                      exText.className = "text-2xl md:text-4xl lg:text-5xl text-gray-100 f1-font italic text-center leading-tight tracking-tight drop-shadow-sm";
                  } else {
                      exText.innerText = "(No Example Data)";
                      exText.className = "text-lg text-gray-600 f1-font italic";
                  }
                  
-                 // 自動音声（逆モード・スペルモード以外）
                  if (this.isAutoAudio && !this.isReverseMode && !this.isSpellingMode) setTimeout(() => this.speak(q.w), 200);
              }
 
@@ -2144,7 +2153,6 @@ to date：現在まで｜This victory is definitely his most impressive performa
              document.getElementById('progress-fill').style.width = `${(this.currentIndex / this.questions.length) * 100}%`;
              document.getElementById('feedback').innerText = '';
              
-             // 各種ボタンのイベントセット
              document.getElementById('speak-btn').onclick = () => this.speak(q.w);
 
              const flagBtn = document.getElementById('flag-btn');
