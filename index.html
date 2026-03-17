@@ -475,9 +475,9 @@
                     <h2 id="target-word" class="f1-font text-3xl md:text-4xl font-bold text-white border-l-4 border-red-600 pl-4 leading-none tracking-tight"></h2>
                 </div>
 
-                <div id="example-area" class="flex items-center justify-center p-6 md:p-10 bg-white/5 rounded-3xl border border-white/10 my-4 shadow-inner overflow-hidden min-h-[120px] w-full max-w-4xl mx-auto">
-                    <p id="example-text" class="text-2xl md:text-4xl lg:text-5xl text-gray-100 f1-font italic text-center leading-tight tracking-tight drop-shadow-sm"></p>
-                </div>
+                <div id="example-area" class="flex items-center justify-center p-2 my-2 w-full max-w-4xl mx-auto min-h-[100px]">
+    <p id="example-text" class="text-2xl md:text-4xl lg:text-5xl text-gray-100 f1-font italic text-center leading-tight tracking-tight drop-shadow-lg"></p>
+</div>
 
                 <div class="flex justify-center gap-6 mb-6">
                     <button id="speak-btn" class="text-gray-400 hover:text-cyan-400 transition-all p-4 rounded-full border border-gray-700 bg-black/40 active:scale-90 shadow-lg group">
@@ -1687,17 +1687,21 @@ to date：現在まで｜This victory is definitely his most impressive performa
             });
         }
 
-        // ★熟語を赤色に強調する機能 (Smart Highlight)
-        highlightIdiom(example, idiom) {
+       highlightIdiom(example, idiom) {
             if (!example || !idiom) return example;
             
-            // 特殊な単語の変形パターンを定義
+            // 特殊文字をエスケープ
             let pattern = idiom.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             
             // be動詞の全形態に対応
             pattern = pattern.replace(/\bbe\b/gi, '(be|am|is|are|was|were|been|being)');
             // oneselfの全形態に対応
             pattern = pattern.replace(/\boneself\b/gi, '(oneself|myself|yourself|himself|herself|itself|ourselves|themselves)');
+            
+            // ★追加：スラッシュ「/」を「または（OR）」として認識させる
+            // be sure of/about のようなケースで of または about のどちらかにマッチさせる
+            pattern = pattern.replace(/\\\//g, '|');
+            
             // ～ や ... をワイルドカード化
             pattern = pattern.replace(/[~～]|\.\.\./g, '.*?');
             
@@ -2121,7 +2125,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
     return example.replace(regex, '____');
 }
 
-       showVocabQuestion() {
+      showVocabQuestion() {
              const q = this.questions[this.currentIndex];
              document.getElementById('question-number').innerText = `LAP ${this.currentIndex + 1} / ${this.questions.length}`;
              
@@ -2129,8 +2133,8 @@ to date：現在まで｜This victory is definitely his most impressive performa
              const exArea = document.getElementById('example-area');
              const exText = document.getElementById('example-text');
 
-             // レイアウト設定
-             exArea.className = "flex-grow flex items-center justify-center p-4 md:p-8 bg-white/5 rounded-3xl border border-white/10 my-4 shadow-inner overflow-hidden min-h-[250px]";
+             // ★枠のスタイルを「透明」に固定 (bg, border, shadowを排除)
+             exArea.className = "flex items-center justify-center p-2 my-2 w-full max-w-4xl mx-auto min-h-[100px]";
 
              if (this.isRadioMode) {
                  targetDisplay.innerText = "RECEIVING...";
@@ -2140,14 +2144,11 @@ to date：現在まで｜This victory is definitely his most impressive performa
                     </div>`;
                  setTimeout(() => this.speak(q.w), 300);
              } else {
-                 // 通常モード：ターゲットを左上に配置
                  targetDisplay.innerText = q.qText;
                  
                  if (q.ex) {
-                     // ★ハイライト機能を適用し、innerHTMLで出力
                      exText.innerHTML = this.highlightIdiom(q.ex, q.w);
-                     // ★サイズを text-5xl に、フォントを f1-font に統一
-                     exText.className = "text-2xl md:text-4xl lg:text-5xl text-gray-100 f1-font italic text-center leading-tight tracking-tight drop-shadow-sm";
+                     exText.className = "text-2xl md:text-4xl lg:text-5xl text-gray-100 f1-font italic text-center leading-tight tracking-tight drop-shadow-lg";
                  } else {
                      exText.innerText = "(No Example Data)";
                      exText.className = "text-lg text-gray-600 f1-font italic";
@@ -2156,10 +2157,10 @@ to date：現在まで｜This victory is definitely his most impressive performa
                  if (this.isAutoAudio && !this.isReverseMode && !this.isSpellingMode) setTimeout(() => this.speak(q.w), 200);
              }
 
+             // --- 以下、既存の処理 ---
              this.lapStartTime = Date.now(); 
              document.getElementById('progress-fill').style.width = `${(this.currentIndex / this.questions.length) * 100}%`;
              document.getElementById('feedback').innerText = '';
-             
              document.getElementById('speak-btn').onclick = () => this.speak(q.w);
 
              const flagBtn = document.getElementById('flag-btn');
