@@ -1657,19 +1657,24 @@ to date：現在まで｜This victory is definitely his most impressive performa
             this.synth.speak(utterance);
         }
 
-                parseData() {
+               parseData() {
             if(!rawData.trim()) { this.masterList = []; return; }
             // [source...] 行を除外し、空行を飛ばす
             const lines = rawData.split('\n').map(l => l.trim()).filter(l => l.length > 0 && !l.startsWith('[source'));
             this.masterList = [];
             
+            // ★引用デブリ（[5] や、 など）を特定する正規表現
+            const citeRegex = /\[(?:cite:\s*)?\d+\]/g;
+            
             lines.forEach(line => {
-                // ★修正ポイント：半角「|」と全角「｜」の両方で分割できるように正規表現を使用
                 const parts = line.split(/[|｜]/).map(s => s.trim());
-                const mainPart = parts[0];
-                const example = parts[1] || "";
+                let mainPart = parts[0];
+                let example = parts[1] || "";
                 
-                // 熟語と意味を分ける区切り文字（半角「:」または全角「：」）の位置を探す
+                // 各パーツからデブリを削除してトリミング
+                mainPart = mainPart.replace(citeRegex, '').trim();
+                example = example.replace(citeRegex, '').trim();
+                
                 let sep = -1;
                 if (mainPart.indexOf(':') !== -1) sep = mainPart.indexOf(':');
                 else if (mainPart.indexOf('：') !== -1) sep = mainPart.indexOf('：');
@@ -1678,7 +1683,7 @@ to date：現在まで｜This victory is definitely his most impressive performa
                     this.masterList.push({ 
                         w: mainPart.substring(0, sep).trim(), 
                         m: mainPart.substring(sep + 1).trim(),
-                        ex: example // 例文を格納
+                        ex: example 
                     });
                 }
             });
