@@ -2066,6 +2066,7 @@ this.masterList.push({
                     w: target.w, 
                     m: target.m, 
                     ex: target.ex, 
+                    exTr: target.exTr, // ここを追加！
                     qText: qText, 
                     aText: aText, 
                     o: options,
@@ -2588,6 +2589,7 @@ if (q.ex) {
                  // ★追加：マスターリストからこの熟語の例文を探してくる
                  const originalData = this.masterList.find(m => m.w === word);
                  const example = item.ex || (originalData ? originalData.ex : "");
+                 const exampleTr = item.exTr || (originalData ? originalData.exTr : ""); // これを追加
                  
                  const targetWord = { w: word, m: meaning };
                  
@@ -2598,6 +2600,7 @@ if (q.ex) {
                      w: targetWord.w, 
                      m: targetWord.m, 
                      ex: example, // ★例文をセット
+                     exTr: exampleTr, // これを追加！
                      qText: targetWord.w, 
                      aText: targetWord.m, 
                      o: options, 
