@@ -2334,37 +2334,6 @@ renderSpellingInterface(q) {
     });
 }
 
-                 const targetLen = targetWordsArray.length;
-                 for(let i=0; i<targetLen; i++) {
-                     const slot = document.createElement('div');
-                     const charObj = this.spellingAns[i]; 
-                     
-                     if (charObj) {
-                         slot.className = "min-w-[3rem] px-3 h-12 border border-white bg-gray-800 rounded mx-1 flex items-center justify-center text-lg font-bold text-white cursor-pointer active:scale-95 transition-transform shadow-[0_0_10px_rgba(255,255,255,0.2)]";
-                         slot.innerText = charObj.char;
-                         slot.onclick = () => this.handleSpellingUndo(i, q);
-                     } else {
-                         slot.className = "min-w-[3rem] px-3 h-12 border-b-2 border-gray-600 mx-1 flex items-center justify-center text-lg font-bold text-gray-600";
-                         slot.innerText = "_";
-                     }
-                     slotsEl.appendChild(slot);
-                 }
-
-                 this.spellingPoolState.forEach((item) => {
-                     const btn = document.createElement('button');
-                     if (item.used) {
-                         btn.className = "px-4 h-12 bg-gray-900 text-gray-500 rounded shadow-inner border border-gray-700 active:scale-95 transition-all text-lg font-bold opacity-50"; 
-                         btn.innerText = item.char;
-                         btn.onclick = () => this.handlePoolUndo(item, q);
-                     } else {
-                         btn.className = "px-4 h-12 bg-gray-800 text-white rounded shadow-md border border-gray-500 active:bg-gray-600 active:scale-95 transition-all text-lg font-bold hover:border-white"; 
-                         btn.innerText = item.char;
-                         btn.onclick = () => this.handleSpellingClick(item, q);
-                     }
-                     poolEl.appendChild(btn);
-                 });
-             }
-
              handlePoolUndo(item, q) {
                  if (this.isLocked) return;
                  const index = this.spellingAns.findIndex(ans => ans.id === item.id);
